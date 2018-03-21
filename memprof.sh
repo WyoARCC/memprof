@@ -27,8 +27,12 @@ TMP_FILE="/tmp/memprof-${PROCESS_PID}.tmp"
 TMP_FILE2=${TMP_FILE}.2
 LOG_FILE2=${LOG_FILE}.2
 
+if [ -z "$PBS_JOBID"]; then
+	echo "jobid: $PBS_JOBID" > $LOG_FILE
+elif [ -z "$SLURM_JOB_ID"]; then
+	echo "jobid: $SLURM_JOB_ID" > $LOG_FILE
+fi
 
-echo "jobid: $PBS_JOBID" > $LOG_FILE
 echo "node: `uname -n`" >> $LOG_FILE
 echo "# CPUs: `cat /proc/cpuinfo | grep processor | wc | awk '{print $1}'`" >> $LOG_FILE
 echo "time: `date`" >> $LOG_FILE
