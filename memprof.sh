@@ -27,9 +27,9 @@ TMP_FILE="/tmp/memprof-${PROCESS_PID}.tmp"
 TMP_FILE2=${TMP_FILE}.2
 LOG_FILE2=${LOG_FILE}.2
 
-if [ -z "$PBS_JOBID"]; then
+if [ -z "$PBS_JOBID" ]; then
 	echo "jobid: $PBS_JOBID" > $LOG_FILE
-elif [ -z "$SLURM_JOB_ID"]; then
+elif [ -z "$SLURM_JOB_ID" ]; then
 	echo "jobid: $SLURM_JOB_ID" > $LOG_FILE
 fi
 
