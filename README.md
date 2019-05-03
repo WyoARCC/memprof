@@ -24,8 +24,10 @@ memprof.sh PROGRAM_NAME PARAMETERS
 ```
 export $MEMPROF_DIR="/home/username/memprof"
 ```
-* To generate graph 
-
+* To generate graph run plotone.sh CSV_FILE.  Replace CSV_FILE with the memprof CSV file that was generated in the memprof folder.  This will generate a PNG file with the memory, IO, and processor usage in one graph
+```
+plotone.sh memprof-1773740-2558109.csv
+```
 ## Example Graph
 ![example](https://raw.githubusercontent.com/IGBIllinois/memprof/master/images/example.png)
 
