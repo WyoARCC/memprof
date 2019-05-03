@@ -1,6 +1,6 @@
 # memprof
-Created By Volodymyr Kindratenko (kindrtnk@illinois.edu) at NCSA (http://www.ncsa.illinois.edu/)
-Memprof is HPC Cluster Program Profiler.  It records the memory, processor, and IO usage of a process.  It will then generate a graph of the results.  
+Memprof is HPC Cluster Program Profiler.  It records the memory, processor, and IO usage of a process.  It will then generate a graph of the results.
+* Created By Volodymyr Kindratenko (kindrtnk@illinois.edu) at NCSA (http://www.ncsa.illinois.edu/)
 
 ## Requirements 
 * Imagemagick [https://imagemagick.org/](https://imagemagick.org/)
@@ -21,6 +21,6 @@ memprof.sh PROGRAM_NAME PARAMETERS
 ```
 export $MEMPROF_DIR="/home/username/memprof"
 ```
-* To generatoe
+* To generate graph 
 
 
