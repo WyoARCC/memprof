@@ -1,7 +1,7 @@
 # memprof
 Memprof is HPC Cluster Program Profiler.  It records the memory, processor, and IO usage of a process.  It will then generate a graph of the results.
 * Created By Volodymyr Kindratenko (kindrtnk@illinois.edu) at NCSA (http://www.ncsa.illinois.edu/)
-
+* Minor update to memprof.sh by ARCC staff.
 ## Requirements 
 * Imagemagick - [https://imagemagick.org/](https://imagemagick.org/)
 * GNUPlot - [http://www.gnuplot.info/](http://www.gnuplot.info/)
