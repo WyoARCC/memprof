@@ -46,7 +46,7 @@ IO_WRITE_LAST=0
 #IO_WRITE_LAST2=0
 
 ELAPSED_TIME=`date +%s`
-CPU=`top -b -p $PROCESS_PID -n 1 | grep $PROCESS_PID | awk '{print $9}'`
+CPU=`top -b -p $PROCESS_PID -n 1 | sed 1,7d | grep $PROCESS_PID | awk '{print $9}'`
 
 # Monitor memory and IO usage until cmd exits
 while [ -f /proc/$PROCESS_PID/exe ]
@@ -94,7 +94,7 @@ do
    done
 
    ELAPSED_TIME=$CURRENT_TIME
-   CPU=`top -b -p $PROCESS_PID -n 1 | grep $PROCESS_PID | awk '{print $9}'`
+   CPU=`top -b -p $PROCESS_PID -n 1 | sed 1,7d | grep $PROCESS_PID | awk '{print $9}'`
 done
 
 #echo "DONE $PROCESS_PID"
