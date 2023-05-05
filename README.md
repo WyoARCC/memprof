@@ -9,7 +9,7 @@ Memprof is HPC Cluster Program Profiler.  It records the memory, processor, and 
 ## Installation
 * Download a release or git clone the repository
 ```
-git clone https://github.com/IGBIllinois/memprof.git
+git clone https://github.com/WyoARCC/memprof
 ```
 * Add /bin folder to your PATH
 ```
