@@ -3,7 +3,7 @@
 
 USAGE="Usage : $0 cmd [args]"
 
-if [ "$#" -eq "0" ] 
+if [ "$#" -eq "0" ]
 then
    echo $USAGE
    exit 1
@@ -20,6 +20,18 @@ if [ ! -d "$MEMPROF_DIR" ]; then
    mkdir $MEMPROF_DIR
 fi
 
+# Function to get the exit code for the subprocess.
+non_blocking_wait() {
+    PID=$1
+    if [ ! -d "/proc/$PID" ]; then
+        wait $PID
+        CODE=$?
+    else
+        CODE=127
+    fi
+    return $CODE
+}
+
 
 LOG_FILE="$MEMPROF_DIR/memprof-${PROCESS_PID}.csv"
 #LOG_FILE="/projects/mayo/BrainGWAS/35PhenosSelectedForTheGrant_TCX_All/memprof-${PROCESS_PID}.csv"
@@ -28,9 +40,9 @@ TMP_FILE2=${TMP_FILE}.2
 LOG_FILE2=${LOG_FILE}.2
 
 if [ -z "$PBS_JOBID" ]; then
-	echo "jobid: $PBS_JOBID" > $LOG_FILE
+        echo "jobid: $PBS_JOBID" > $LOG_FILE
 elif [ -z "$SLURM_JOB_ID" ]; then
-	echo "jobid: $SLURM_JOB_ID" > $LOG_FILE
+        echo "jobid: $SLURM_JOB_ID" > $LOG_FILE
 fi
 
 echo "node: `uname -n`" >> $LOG_FILE
@@ -44,7 +56,7 @@ IO_READ_LAST=0
 IO_WRITE_LAST=0
 #IO_READ_LAST2=0
 #IO_WRITE_LAST2=0
-
+EXIT_CODE=127
 ELAPSED_TIME=`date +%s`
 CPU=`top -b -p $PROCESS_PID -n 1 | sed 1,7d | grep $PROCESS_PID | awk '{print $9}'`
 
@@ -64,7 +76,7 @@ do
    IO_WRITE_ACTUAL=`expr $IO_WRITE - $IO_WRITE_LAST`
 
    #IO_READ2=0
-   #IO_WRITE2=0   
+   #IO_WRITE2=0
    #for i in `cat $TMP_FILE2 | grep rchar | awk '{print $2}'`
    #do
    #   IO_READ2=`expr $IO_READ2 + $i`
@@ -74,15 +86,15 @@ do
    #do
    #   IO_WRITE2=`expr $IO_WRITE2 + $i`
    #done
-   
+
    #IO_READ_ACTUAL2=`expr $IO_READ2 - $IO_READ_LAST2`
    #IO_WRITE_ACTUAL2=`expr $IO_WRITE2 - $IO_WRITE_LAST2`
-   
+
    echo "$ELAPSED_TIME,$N_THREADS,$CPU,$VM_SIZE,$VM_RSS,$IO_READ_ACTUAL,$IO_WRITE_ACTUAL" >> $LOG_FILE
 
    IO_READ_LAST=$IO_READ
    IO_WRITE_LAST=$IO_WRITE
-   
+
    #IO_READ_LAST2=$IO_READ2
    #IO_WRITE_LAST2=$IO_WRITE2
 
@@ -96,10 +108,14 @@ do
    ELAPSED_TIME=$CURRENT_TIME
    CPU=`top -b -p $PROCESS_PID -n 1 | sed 1,7d | grep $PROCESS_PID | awk '{print $9}'`
 done
+non_blocking_wait $PROCESS_PID
+   TEMP_CODE=$?
+   if [ $TEMP_CODE -ne 127 ]; then
+       EXIT_CODE=$TEMP_CODE
+  fi
 
 #echo "DONE $PROCESS_PID"
 
-#rm $TMP_FILE 
+#rm $TMP_FILE
 
-exit $?
-
+exit $EXIT_CODE
