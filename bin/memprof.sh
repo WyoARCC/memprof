@@ -14,26 +14,29 @@ MEMPROF_DIR=./memprof
 if [ ! -d "$MEMPROF_DIR" ]; then
    mkdir $MEMPROF_DIR
 fi
-
 EXIT_CODE_FILE="./$MEMPROF_DIR/memprof-exit.tmp"
-# launch cmd
-#echo "cmd: [ $@ ]"
-$@ ; echo $? > $EXIT_CODE_FILE &
-PROCESS_PID=$!
-
+PID_CODE_FILE="./$MEMPROF_DIR/memprof-pid.tmp"
 # Function to get the exit code for the subprocess.
-non_blocking_wait() {
-    PID=$1
-    if [ ! -d "/proc/$PID" ]; then
-        wait $PID
-        CODE=$(<$EXIT_CODE_FILE)
-    else
-        CODE=127
-    fi
-    return $CODE
+profile_command() {
+    $@ &
+    PID=$!
+    echo "$PID" > $PID_CODE_FILE
+    wait $PID
+    CODE=$?
+    echo "$CODE" > $EXIT_CODE_FILE
 }
 
-
+# launch cmd
+#echo "cmd: [ $@ ]"
+profile_command $@ &
+while true
+do
+if [ -f "$PID_CODE_FILE" ];
+then
+   PROCESS_PID=$(cat "$PID_CODE_FILE")
+   break
+fi
+done
 LOG_FILE="$MEMPROF_DIR/memprof-${PROCESS_PID}.csv"
 #LOG_FILE="/projects/mayo/BrainGWAS/35PhenosSelectedForTheGrant_TCX_All/memprof-${PROCESS_PID}.csv"
 TMP_FILE="/tmp/memprof-${PROCESS_PID}.tmp"
@@ -57,7 +60,6 @@ IO_READ_LAST=0
 IO_WRITE_LAST=0
 #IO_READ_LAST2=0
 #IO_WRITE_LAST2=0
-EXIT_CODE=127
 ELAPSED_TIME=`date +%s`
 CPU=`top -b -p $PROCESS_PID -n 1 | sed 1,7d | grep $PROCESS_PID | awk '{print $9}'`
 
@@ -109,14 +111,10 @@ do
    ELAPSED_TIME=$CURRENT_TIME
    CPU=`top -b -p $PROCESS_PID -n 1 | sed 1,7d | grep $PROCESS_PID | awk '{print $9}'`
 done
-non_blocking_wait $PROCESS_PID
-   TEMP_CODE=$?
-   if [ $TEMP_CODE -ne 127 ]; then
-       EXIT_CODE=$TEMP_CODE
-  fi
 
 #echo "DONE $PROCESS_PID"
-
+EXIT_CODE=$(cat "$EXIT_CODE_FILE")
 #rm $TMP_FILE
 rm $EXIT_CODE_FILE
+rm $PID_CODE_FILE
 exit $EXIT_CODE
