@@ -9,23 +9,24 @@ then
    exit 1
 fi
 
-# launch cmd
-#echo "cmd: [ $@ ]"
-$@ &
-PROCESS_PID=$!
 
 MEMPROF_DIR=./memprof
-
 if [ ! -d "$MEMPROF_DIR" ]; then
    mkdir $MEMPROF_DIR
 fi
+
+EXIT_CODE_FILE="./$MEMPROF_DIR/memprof-exit.tmp"
+# launch cmd
+#echo "cmd: [ $@ ]"
+$@ ; echo $? > $EXIT_CODE_FILE &
+PROCESS_PID=$!
 
 # Function to get the exit code for the subprocess.
 non_blocking_wait() {
     PID=$1
     if [ ! -d "/proc/$PID" ]; then
         wait $PID
-        CODE=$?
+        CODE=$(<$EXIT_CODE_FILE)
     else
         CODE=127
     fi
@@ -117,5 +118,5 @@ non_blocking_wait $PROCESS_PID
 #echo "DONE $PROCESS_PID"
 
 #rm $TMP_FILE
-
+rm $EXIT_CODE_FILE
 exit $EXIT_CODE
