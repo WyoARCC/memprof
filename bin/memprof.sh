@@ -113,7 +113,14 @@ do
 done
 
 #echo "DONE $PROCESS_PID"
-EXIT_CODE=$(cat "$EXIT_CODE_FILE")
+while true
+do
+if [ -f "$EXIT_CODE_FILE" ];
+then
+   EXIT_CODE=$(cat "$EXIT_CODE_FILE")
+   break
+fi
+done
 #rm $TMP_FILE
 rm $EXIT_CODE_FILE
 rm $PID_CODE_FILE
